@@ -4,7 +4,7 @@ const multer = require("multer");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const fs = require("fs");
-
+const { getOrCreatePhotoCollectionFolder } = require("./Dao/Drive/fileManagement");
 require("dotenv").config();
 
 const app = express();
@@ -16,6 +16,8 @@ const oauth2Client = new google.auth.OAuth2(
     process.env.CLIENT_SECRET,
     process.env.REDIRECT_URI
 );
+// const drive = google.drive({ version: 'v3', auth: oAuth2Client });
+
 
 // Endpoint to generate authentication URL
 app.get("/auth-url", (req, res) => {
@@ -38,6 +40,7 @@ app.get("/oauth2callback", async (req, res) => {
         const { tokens } = await oauth2Client.getToken(code);
 
         oauth2Client.setCredentials(tokens);
+        console.log(tokens);
         res.send({ success: true, tokens });
     } catch (err) {
         res.status(500).send("Authentication failed");
@@ -104,6 +107,35 @@ app.post("/create-folder", async (req, res) => {
     }
 });
 
+
+app.post("/api/google-login", async (req, res) => {
+    const { idToken } = req.body;
+    try {
+        // Verify the ID token
+        const ticket = await oauth2Client.verifyIdToken({
+            idToken,
+        });
+        console.log("Ticket:", ticket);
+
+        const payload = ticket.getPayload();
+        const userId = payload.sub;
+        console.log(`User ${userId} logged in.`);
+
+        // Set OAuth2 client credentials
+        oauth2Client.setCredentials({
+            access_token: idToken,
+        });
+        const drive = google.drive({ version: "v3", auth: oauth2Client });
+
+        // Pass authenticated client to Google Drive functions
+        const folderId = await getOrCreatePhotoCollectionFolder(drive);
+        res.json({ folderId });
+    } catch (error) {
+        console.error("Login error:", error.message);
+        res.status(500).json({ error: "Authentication failed." });
+    }
+});
+
 // Route to upload a file to a folder
 app.post("/upload/:folderId", upload.single("file"), async (req, res) => {
     try {
@@ -115,5 +147,5 @@ app.post("/upload/:folderId", upload.single("file"), async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

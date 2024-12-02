@@ -1,28 +1,41 @@
-import React from 'react';
-import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import React, { useState } from 'react';
+import { useGoogleLogin } from '@react-oauth/google';
+var backendUrl = 'http://localhost:5000';
+
 
 function App() {
-  const handleLoginSuccess = (response) => {
-    console.log('Login Success:', response);
-    // You can send the response to your backend for token verification and user info retrieval.
+  function handleCredentialResponse(response) {
+    const idToken = response.credential; // Get the ID token from Google login
+    fetch("http://localhost:5000/api/google-login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ idToken }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Folder ID:", data.folderId);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
+  const errorMessage = (error) => {
+    console.log(error);
   };
-
-  const handleLoginFailure = (error) => {
-    console.error('Login Failed:', error);
-  };
+  const loginbtn = useGoogleLogin({
+    flow: 'auth-code',
+    onSuccess: { handleCredentialResponse }, onError: { errorMessage }
+  })
 
   return (
-    <GoogleOAuthProvider >
-      <div className="App">
-        <h1>Login with Google</h1>
-        <GoogleLogin
-          onSuccess={handleLoginSuccess}
-          onError={handleLoginFailure}
-          useOneTap
-        />
-      </div>
-    </GoogleOAuthProvider>
-  );
+    <div>
+      <h2>React Google Login</h2>
+      <br />
+      <br />
+      <button onClick={loginbtn}>Login with Google</button>
+    </div>
+  )
 }
-
 export default App;
