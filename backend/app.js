@@ -8,6 +8,14 @@ const { getOrCreatePhotoCollectionFolder } = require("./Dao/Drive/fileManagement
 require("dotenv").config();
 
 const app = express();
+
+// Add COOP and COEP headers
+app.use((req, res, next) => {
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+    res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+    next();
+});
+
 app.use(cors());
 app.use(bodyParser.json());
 
@@ -111,6 +119,7 @@ app.post("/create-folder", async (req, res) => {
 app.post("/api/google-login", async (req, res) => {
     const { idToken } = req.body;
     try {
+        console.log("ID Token:", idToken);
         // Verify the ID token
         const ticket = await oauth2Client.verifyIdToken({
             idToken,

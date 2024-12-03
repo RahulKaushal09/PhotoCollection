@@ -26,6 +26,7 @@ function App() {
   };
   const loginbtn = useGoogleLogin({
     flow: 'auth-code',
+    scope: "https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file",
     onSuccess: { handleCredentialResponse }, onError: { errorMessage }
   })
 
