@@ -28,32 +28,32 @@ const oauth2Client = new google.auth.OAuth2(
 
 
 // Endpoint to generate authentication URL
-app.get("/auth-url", (req, res) => {
-    const scopes = [
-        "https://www.googleapis.com/auth/drive.file",
-        "https://www.googleapis.com/auth/userinfo.email",
-        "https://www.googleapis.com/auth/userinfo.profile",
-    ];
-    const url = oauth2Client.generateAuthUrl({
-        access_type: "offline",
-        scope: scopes,
-    });
-    res.send({ url });
-});
+// app.get("/auth-url", (req, res) => {
+//     const scopes = [
+//         "https://www.googleapis.com/auth/drive.file",
+//         "https://www.googleapis.com/auth/userinfo.email",
+//         "https://www.googleapis.com/auth/userinfo.profile",
+//     ];
+//     const url = oauth2Client.generateAuthUrl({
+//         access_type: "offline",
+//         scope: scopes,
+//     });
+//     res.send({ url });
+// });
 
-// OAuth callback to retrieve tokens
-app.get("/oauth2callback", async (req, res) => {
-    const { code } = req.query;
-    try {
-        const { tokens } = await oauth2Client.getToken(code);
+// // OAuth callback to retrieve tokens
+// app.get("/oauth2callback", async (req, res) => {
+//     const { code } = req.query;
+//     try {
+//         const { tokens } = await oauth2Client.getToken(code);
 
-        oauth2Client.setCredentials(tokens);
-        console.log(tokens);
-        res.send({ success: true, tokens });
-    } catch (err) {
-        res.status(500).send("Authentication failed");
-    }
-});
+//         oauth2Client.setCredentials(tokens);
+//         console.log(tokens);
+//         res.send({ success: true, tokens });
+//     } catch (err) {
+//         res.status(500).send("Authentication failed");
+//     }
+// });
 
 // Middleware for handling file uploads
 const upload = multer({ dest: "uploads/" });
@@ -122,7 +122,13 @@ app.post("/api/google-login", async (req, res) => {
     try {
         console.log("ID Token:", code);
         // Verify the ID token
-        const { tokens } = await oauth2Client.getToken(code);
+        console.log(process.env.REDIRECT_URI);
+
+        // const { tokens } = await oauth2Client.getToken(code);
+        const { tokens } = await oauth2Client.getToken({
+            code,
+            redirect_uri: "http://localhost:5000/api/google-login", // Ensure it matches Google Console
+        });
         console.log("ID Token:", tokens);
         const ticket = await oauth2Client.verifyIdToken({
             idToken,
