@@ -50,27 +50,67 @@ async function createPhotoCollectionFolder(drive) {
         throw new Error('Failed to create folder');
     }
 }
+async function listFilesAndFoldersInParent(drive, parentFolderId) {
+    try {
+        let files = [];
+        let pageToken = null;
+
+        do {
+            const res = await drive.files.list({
+                q: `'${parentFolderId}' in parents and trashed = false`, // Files with this parent folder ID
+                fields: "nextPageToken, files(id, name, mimeType, parents)", // Specify fields to fetch
+                pageToken: pageToken, // Handle pagination
+            });
+
+            files = files.concat(res.data.files);
+            pageToken = res.data.nextPageToken; // Continue to next page if available
+        } while (pageToken);
+
+        console.log(`Files and folders in parent folder (${parentFolderId}):`, files);
+        return files;
+    } catch (error) {
+        console.error('Error fetching files:', error.message);
+        throw new Error('Failed to fetch files in the parent folder');
+    }
+}
 
 // Function to retrieve all collection folders within "photoCollection" folder
-async function getAllCollectionsInPhotoCollection(parentFolderId) {
+async function getAllCollectionsInPhotoCollection(drive, parentFolderId) {
     try {
-        const query = `mimeType = 'application/vnd.google-apps.folder' and '${parentFolderId}' in parents and trashed = false`;
-        const res = await drive.files.list({
-            q: query,
-            fields: 'files(id, name)',
-        });
+
+        const parentFolderId = "1TsAemnT7vSjZaGVhVCpfzpHZRy8gghhF";
+        const filesInParent = await listFilesAndFoldersInParent(drive, parentFolderId);
+
+        console.log('Folders:');
+        filesInParent
+            .filter(file => file.mimeType === 'application/vnd.google-apps.folder')
+            .forEach(folder => console.log(folder));
+
+        console.log('Files:');
+        filesInParent
+            .filter(file => file.mimeType !== 'application/vnd.google-apps.folder')
+            .forEach(file => console.log(file));
+        // // const query = `mimeType = 'application/vnd.google-apps.folder' and '${parentFolderId}' in parents and trashed = false`;
+        // const query = `'${parentFolderId}' in parents and trashed = false`;
+        // const res = await drive.files.list({
+        //     q: query,
+        //     fields: 'files(id, name, mimeType)', // Fetch file type for differentiation
+        // });
+        // console.log("jbdshajbdhsjadbh");
+
+        // console.log("res import: ", res);
 
         const collections = res.data.files;
         console.log('Found collections:', collections);
         return collections;
     } catch (error) {
-        console.error('Error fetching collections:', error);
+        console.error('Error fetching collections:', error.errors[0].message);
         throw new Error('Failed to fetch collections');
     }
 }
 
 // Function to retrieve all images inside a given collection folder
-async function getImagesInCollection(folderId) {
+async function getImagesInCollection(drive, folderId) {
     try {
         const query = `mimeType contains 'image/' and '${folderId}' in parents and trashed = false`;
         const res = await drive.files.list({

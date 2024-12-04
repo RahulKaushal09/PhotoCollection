@@ -4,7 +4,9 @@ const multer = require("multer");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const fs = require("fs");
-const { getOrCreatePhotoCollectionFolder } = require("./Dao/Drive/fileManagement");
+const { getOrCreatePhotoCollectionFolder,
+    getAllCollectionsInPhotoCollection
+} = require("./Dao/Drive/fileManagement");
 require("dotenv").config();
 
 const app = express();
@@ -114,6 +116,22 @@ app.post("/create-folder", async (req, res) => {
     }
 });
 
+app.post("/getAllCollection", async (req, res) => {
+    try {
+        const access_token = req.body.access_token;
+        const folderId = req.body.folderId;
+        oauth2Client.setCredentials({
+            access_token: access_token,
+        });
+
+        const drive = google.drive({ version: "v3", auth: oauth2Client });
+        const collections = await getAllCollectionsInPhotoCollection(drive, folderId);
+        res.json({ collections, message: "Collections fetched successfully" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 
 app.post("/api/google-login", async (req, res) => {
 
@@ -125,7 +143,7 @@ app.post("/api/google-login", async (req, res) => {
             code,
             redirect_uri: "http://localhost:3000",
         });
-        // console.log("ID Token:", tokens);
+        console.log("ID Token:", tokens);
         const idToken = tokens.id_token;
         const refreshToken = tokens.refresh_token;
         const access_token = tokens.access_token;
@@ -146,7 +164,11 @@ app.post("/api/google-login", async (req, res) => {
 
         // Pass authenticated client to Google Drive functions
         const folderId = await getOrCreatePhotoCollectionFolder(drive);
-        res.json({ folderId });
+        res.json({
+            folderId: folderId,
+            message: "Login successful",
+            access_token: access_token
+        });
     } catch (error) {
         console.error("Login error:", error.message);
         res.status(500).json({ error: "Authentication failed." });
