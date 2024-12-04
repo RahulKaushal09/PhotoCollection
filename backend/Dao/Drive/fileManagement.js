@@ -5,7 +5,7 @@ async function getOrCreatePhotoCollectionFolder(drive) {
     try {
         // Query to check if a folder named "photoCollection" exists
         const query = "mimeType = 'application/vnd.google-apps.folder' and name = 'photoCollection' and trashed = false";
-        console.log(drive);
+        // console.log(drive);
 
         const res = await drive.files.list({
             q: query,
@@ -13,6 +13,7 @@ async function getOrCreatePhotoCollectionFolder(drive) {
         });
 
         const folders = res.data.files;
+        console.log('Found folders:', folders);
 
         if (folders.length > 0) {
             // If folder exists, return the ID of the first folder found
@@ -21,7 +22,7 @@ async function getOrCreatePhotoCollectionFolder(drive) {
         } else {
             // If folder does not exist, create it
             console.log('Creating photoCollection folder');
-            return await createPhotoCollectionFolder();
+            return await createPhotoCollectionFolder(drive);
         }
     } catch (error) {
         console.error('Error checking or creating photoCollection folder:', error);
@@ -30,7 +31,7 @@ async function getOrCreatePhotoCollectionFolder(drive) {
 }
 
 // Function to create the "photoCollection" folder if it doesn't exist
-async function createPhotoCollectionFolder() {
+async function createPhotoCollectionFolder(drive) {
     try {
         const folderMetadata = {
             name: 'photoCollection',

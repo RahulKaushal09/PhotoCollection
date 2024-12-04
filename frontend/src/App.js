@@ -28,6 +28,7 @@ function App() {
   };
   const loginbtn = useGoogleLogin({
     flow: 'auth-code',
+    redirect_uri: "http://localhost:5000/api/google-login",  // Make sure this matches the Cloud Console
     scope: "https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",
     onSuccess: handleCredentialResponse, onError: errorMessage
   })

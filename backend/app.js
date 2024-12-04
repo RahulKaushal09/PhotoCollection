@@ -22,7 +22,6 @@ app.use(bodyParser.json());
 const oauth2Client = new google.auth.OAuth2(
     process.env.CLIENT_ID,
     process.env.CLIENT_SECRET,
-    process.env.REDIRECT_URI
 );
 // const drive = google.drive({ version: 'v3', auth: oAuth2Client });
 
@@ -120,20 +119,20 @@ app.post("/api/google-login", async (req, res) => {
 
     const { code } = req.body.response;
     try {
-        console.log("ID Token:", code);
+        // console.log("ID Token:", code);
         // Verify the ID token
-        console.log(process.env.REDIRECT_URI);
-
-        // const { tokens } = await oauth2Client.getToken(code);
         const { tokens } = await oauth2Client.getToken({
             code,
-            redirect_uri: "http://localhost:5000/api/google-login", // Ensure it matches Google Console
+            redirect_uri: "http://localhost:3000",
         });
-        console.log("ID Token:", tokens);
+        // console.log("ID Token:", tokens);
+        const idToken = tokens.id_token;
+        const refreshToken = tokens.refresh_token;
+        const access_token = tokens.access_token;
         const ticket = await oauth2Client.verifyIdToken({
             idToken,
         });
-        console.log("Ticket:", ticket);
+        // console.log("Ticket:", ticket);
 
         const payload = ticket.getPayload();
         const userId = payload.sub;
@@ -141,7 +140,7 @@ app.post("/api/google-login", async (req, res) => {
 
         // Set OAuth2 client credentials
         oauth2Client.setCredentials({
-            access_token: idToken,
+            access_token: access_token,
         });
         const drive = google.drive({ version: "v3", auth: oauth2Client });
 
