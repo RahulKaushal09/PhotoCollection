@@ -117,10 +117,13 @@ app.post("/create-folder", async (req, res) => {
 
 
 app.post("/api/google-login", async (req, res) => {
-    const { idToken } = req.body;
+
+    const { code } = req.body.response;
     try {
-        console.log("ID Token:", idToken);
+        console.log("ID Token:", code);
         // Verify the ID token
+        const { tokens } = await oauth2Client.getToken(code);
+        console.log("ID Token:", tokens);
         const ticket = await oauth2Client.verifyIdToken({
             idToken,
         });

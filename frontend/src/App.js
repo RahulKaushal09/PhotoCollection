@@ -5,13 +5,15 @@ var backendUrl = 'http://localhost:5000';
 
 function App() {
   function handleCredentialResponse(response) {
-    const idToken = response.credential; // Get the ID token from Google login
+    console.log(response);
+
+    // const idToken = response.credential; // Get the ID token from Google login
     fetch("http://localhost:5000/api/google-login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ idToken }),
+      body: JSON.stringify({ response }),
     })
       .then((res) => res.json())
       .then((data) => {
@@ -26,8 +28,8 @@ function App() {
   };
   const loginbtn = useGoogleLogin({
     flow: 'auth-code',
-    scope: "https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file",
-    onSuccess: { handleCredentialResponse }, onError: { errorMessage }
+    scope: "https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",
+    onSuccess: handleCredentialResponse, onError: errorMessage
   })
 
   return (
