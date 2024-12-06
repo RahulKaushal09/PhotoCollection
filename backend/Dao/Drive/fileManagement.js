@@ -110,8 +110,8 @@ async function getAllCollectionsInPhotoCollection(drive, parentFolderId) {
         const folders = allItems.filter(item => item.mimeType === 'application/vnd.google-apps.folder');
         const files = allItems.filter(item => item.mimeType !== 'application/vnd.google-apps.folder');
 
-        // console.log('Folders:', folders);
-        // console.log('Files:', files);
+        console.log('Folders:', folders);
+        console.log('Files:', files);
 
         return { folders, files };
     } catch (error) {
