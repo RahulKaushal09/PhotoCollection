@@ -125,8 +125,12 @@ app.post("/getAllCollection", async (req, res) => {
         });
 
         const drive = google.drive({ version: "v3", auth: oauth2Client });
-        const collections = await getAllCollectionsInPhotoCollection(drive, folderId);
-        res.json({ collections, message: "Collections fetched successfully" });
+        const { folders, files } = await getAllCollectionsInPhotoCollection(drive, folderId);
+        res.json({
+            folders,
+            files,
+            message: "Collections fetched successfully",
+        });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

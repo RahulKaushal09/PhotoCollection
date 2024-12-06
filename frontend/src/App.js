@@ -1,24 +1,43 @@
 import React, { useState } from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
+import CollectionsViewer from './pages/collection/index';
+
 var backendUrl = 'http://localhost:5000';
 
 
 function App() {
-  function getAllCollection() {
-    fetch(backendUrl + '/getAllCollection', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ access_token: localStorage.getItem('accessToken') }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((error) => {
-        console.error('Error:', error);
+  const [data, setData] = useState({ folders: [], files: [] });
+  const [error, setError] = useState(null);
+  async function getAllCollection() {
+    const accessToken = localStorage.getItem('accessToken');
+    const folderId = localStorage.getItem('folderId');
+
+    if (!accessToken || !folderId) {
+      console.error('Missing required data: access token or folder ID');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${backendUrl}/getAllCollection`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ access_token: accessToken, folderId }),
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Response Data:', data);
+
+      // Update state with fetched data
+      setData(data);
+    } catch (error) {
+      console.error('Error fetching collections:', error.message);
+    }
   }
 
   function handleCredentialResponse(response) {
@@ -60,7 +79,11 @@ function App() {
       <br />
       <button onClick={loginbtn}>Login with Google</button>
       <button onClick={getAllCollection}>All Collections</button>
+
+      <CollectionsViewer />
+
     </div>
+
   )
 }
 export default App;

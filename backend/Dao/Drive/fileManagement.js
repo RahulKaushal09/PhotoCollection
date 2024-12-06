@@ -77,34 +77,45 @@ async function listFilesAndFoldersInParent(drive, parentFolderId) {
 // Function to retrieve all collection folders within "photoCollection" folder
 async function getAllCollectionsInPhotoCollection(drive, parentFolderId) {
     try {
+        // Helper function to list files and folders in a given parent folder
+        async function listFilesAndFoldersInParent(drive, folderId) {
+            const query = `'${folderId}' in parents and trashed = false`;
+            const res = await drive.files.list({
+                q: query,
+                fields: 'files(id, name, mimeType)',
+            });
+            return res.data.files || [];
+        }
 
-        const parentFolderId = "1TsAemnT7vSjZaGVhVCpfzpHZRy8gghhF";
-        const filesInParent = await listFilesAndFoldersInParent(drive, parentFolderId);
+        // Helper function to recursively fetch files and folders
+        async function fetchAllFilesAndFolders(drive, folderId) {
+            const items = await listFilesAndFoldersInParent(drive, folderId);
+            let allItems = [...items];
 
-        console.log('Folders:');
-        filesInParent
-            .filter(file => file.mimeType === 'application/vnd.google-apps.folder')
-            .forEach(folder => console.log(folder));
+            // Recursively process subfolders
+            for (const item of items) {
+                if (item.mimeType === 'application/vnd.google-apps.folder') {
+                    const subfolderItems = await fetchAllFilesAndFolders(drive, item.id);
+                    allItems = allItems.concat(subfolderItems);
+                }
+            }
 
-        console.log('Files:');
-        filesInParent
-            .filter(file => file.mimeType !== 'application/vnd.google-apps.folder')
-            .forEach(file => console.log(file));
-        // // const query = `mimeType = 'application/vnd.google-apps.folder' and '${parentFolderId}' in parents and trashed = false`;
-        // const query = `'${parentFolderId}' in parents and trashed = false`;
-        // const res = await drive.files.list({
-        //     q: query,
-        //     fields: 'files(id, name, mimeType)', // Fetch file type for differentiation
-        // });
-        // console.log("jbdshajbdhsjadbh");
+            return allItems;
+        }
 
-        // console.log("res import: ", res);
+        // Fetch all files and folders starting from the parent folder
+        const allItems = await fetchAllFilesAndFolders(drive, parentFolderId);
 
-        const collections = res.data.files;
-        console.log('Found collections:', collections);
-        return collections;
+        // Separate folders and files for better readability
+        const folders = allItems.filter(item => item.mimeType === 'application/vnd.google-apps.folder');
+        const files = allItems.filter(item => item.mimeType !== 'application/vnd.google-apps.folder');
+
+        // console.log('Folders:', folders);
+        // console.log('Files:', files);
+
+        return { folders, files };
     } catch (error) {
-        console.error('Error fetching collections:', error.errors[0].message);
+        console.error('Error fetching collections:', error.message);
         throw new Error('Failed to fetch collections');
     }
 }
