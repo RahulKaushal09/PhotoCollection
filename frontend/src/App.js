@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
-import CollectionsViewer from './Components/collection/index';
-import Collections from './pages/collection';
+// import CollectionsViewer from './Components/collection/index';
+import Collections from './pages/collection/index';
 
 var backendUrl = 'http://localhost:5000';
 
@@ -9,37 +9,10 @@ var backendUrl = 'http://localhost:5000';
 function App() {
   const [data, setData] = useState({ folders: [], files: [] });
   const [error, setError] = useState(null);
-  async function getAllCollection() {
-    const accessToken = localStorage.getItem('accessToken');
-    const folderId = localStorage.getItem('folderId');
+  const [folders, setFolders] = useState([]);
+  const [images, setImages] = useState([]);
 
-    if (!accessToken || !folderId) {
-      console.error('Missing required data: access token or folder ID');
-      return;
-    }
 
-    try {
-      const response = await fetch(`${backendUrl}/getAllCollection`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ access_token: accessToken, folderId }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log('Response Data:', data);
-
-      // Update state with fetched data
-      setData(data);
-    } catch (error) {
-      console.error('Error fetching collections:', error.message);
-    }
-  }
 
   function handleCredentialResponse(response) {
     console.log(response);
@@ -79,10 +52,10 @@ function App() {
       <br />
       <br />
       <button onClick={loginbtn}>Login with Google</button>
-      <button onClick={getAllCollection}>All Collections</button>
+      {/* <button onClick={getAllCollection}>All Collections</button> */}
 
       {/* <CollectionsViewer /> */}
-      <Collections />
+      <Collections folders={folders} images={images} />
 
     </div>
 

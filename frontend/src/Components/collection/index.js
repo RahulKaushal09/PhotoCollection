@@ -11,10 +11,7 @@ const CollectionsViewer = () => {
         fetchCollections();
     }, []);
 
-    // Function to generate image URL for Google Drive
-    const getImageUrl = (fileId) => {
-        return `https://drive.google.com/uc?export=view&id=${fileId}`;
-    };
+
 
     return (
         <div>
@@ -54,38 +51,6 @@ const CollectionsViewer = () => {
     );
 };
 
-// Fetch collections and update state
-async function getAllCollection(setData) {
-    const accessToken = localStorage.getItem('accessToken');
-    const folderId = localStorage.getItem('folderId');
-    const backendUrl = 'http://localhost:5000';
 
-    if (!accessToken || !folderId) {
-        console.error('Missing required data: access token or folder ID');
-        return;
-    }
-
-    try {
-        const response = await fetch(`${backendUrl}/getAllCollection`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ access_token: accessToken, folderId }),
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('Response Data:', data);
-
-        // Update state with fetched data
-        setData(data);
-    } catch (error) {
-        console.error('Error fetching collections:', error.message);
-    }
-}
 
 export default CollectionsViewer;
