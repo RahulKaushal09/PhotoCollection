@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
-import CollectionsViewer from './pages/collection/index';
+import CollectionsViewer from './Components/collection/index';
+import Collections from './pages/collection';
 
 var backendUrl = 'http://localhost:5000';
 
@@ -80,7 +81,8 @@ function App() {
       <button onClick={loginbtn}>Login with Google</button>
       <button onClick={getAllCollection}>All Collections</button>
 
-      <CollectionsViewer />
+      {/* <CollectionsViewer /> */}
+      <Collections />
 
     </div>
 

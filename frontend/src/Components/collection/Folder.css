@@ -1,0 +1,22 @@
+.folder {
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+}
+
+.folder-preview {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 5px;
+}
+
+.folder-img {
+    width: 100%;
+    border-radius: 5px;
+}
+
+.folder-name {
+    margin-top: 10px;
+    font-weight: bold;
+}
