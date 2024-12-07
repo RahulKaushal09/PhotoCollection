@@ -7,16 +7,18 @@ const ImageViewer = ({ fileId }) => {
 
     useEffect(() => {
         if (accessToken) {
-            fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
+            fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?fields=thumbnailLink`, {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
             })
-                .then((response) => response.blob())
-                .then((blob) => {
-                    const url = URL.createObjectURL(blob);
-                    setImageUrl(url);
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log(data);
+
+                    // const url = URL.createObjectURL(data);
+                    setImageUrl(data.thumbnailLink);
                 })
                 .catch((error) => {
                     console.error("Error fetching the image:", error);

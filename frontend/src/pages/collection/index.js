@@ -68,14 +68,17 @@ const Collections = () => {
         <div className="collectionBox">
             <FilterBar filter={filter} setFilter={setFilter} />
             <div className="content">
-                {filter === "All" || filter === "Folders" ? (
+                <div className={`folder-section ${filter === "All" || filter === "Folders" ? "" : "hidden"}`}>
+                    <h2>Folder Collection</h2>
                     <FolderGrid folders={folders} />
-                ) : null}
-                <h2>Image Collection</h2>
-                {filter === "All" || filter === "Pictures" ? (
+                </div>
+
+                <div className={`image-section ${filter === "All" || filter === "Pictures" ? "" : "hidden"}`}>
+                    <h2>Image Collection</h2>
                     <ImageGrid images={images} />
-                ) : null}
+                </div>
             </div>
+
         </div>
     );
 };
