@@ -6,7 +6,7 @@ import ImageGrid from "../../Components/collection/ImageGrid";
 import { useEffect } from "react";
 import "./Collections.css";
 
-const Collections = () => {
+const Collections = ({ parentFolderName, parentFolderId }) => {
     const [filter, setFilter] = useState("All");
     const [data, setData] = useState({ folders: [], files: [] });
     const [error, setError] = useState(null);
@@ -25,6 +25,12 @@ const Collections = () => {
     async function getAllCollection(setData) {
         const accessToken = localStorage.getItem('accessToken');
         const folderId = localStorage.getItem('folderId');
+
+        if (parentFolderId) {
+            console.log(parentFolderId);
+            folderId = parentFolderId;
+        }
+
         const backendUrl = 'http://localhost:5000';
 
         if (!accessToken || !folderId) {
@@ -67,6 +73,7 @@ const Collections = () => {
     return (
         <div className="collectionBox">
             <FilterBar filter={filter} setFilter={setFilter} />
+            <h1>{parentFolderId != undefined && parentFolderId != null ? parentFolderName : "Your Trip Lens"}</h1>
             <div className="content">
                 <div className={`folder-section ${filter === "All" || filter === "Folders" ? "" : "hidden"}`}>
                     <h2>Folder Collection</h2>
