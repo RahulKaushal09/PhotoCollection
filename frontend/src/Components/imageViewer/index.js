@@ -1,38 +1,37 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
+import "./ImageViewer.css";
 
 const ImageViewer = ({ fileId }) => {
     const [imageUrl, setImageUrl] = useState(null);
-    const accessToken = localStorage.getItem('accessToken');
+    const accessToken = localStorage.getItem("accessToken");
 
     useEffect(() => {
         if (accessToken) {
-            // Fetch the image using the Google Drive API and access token
             fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
-                method: 'GET',
+                method: "GET",
                 headers: {
-                    'Authorization': `Bearer ${accessToken}`,
+                    Authorization: `Bearer ${accessToken}`,
                 },
             })
-                .then(response => response.blob())
-                .then(blob => {
-                    // Create a local URL for the image blob and update the state
+                .then((response) => response.blob())
+                .then((blob) => {
                     const url = URL.createObjectURL(blob);
                     setImageUrl(url);
                 })
-                .catch(error => {
-                    console.error('Error fetching the image:', error);
+                .catch((error) => {
+                    console.error("Error fetching the image:", error);
                 });
         } else {
-            console.error('Access token is missing');
+            console.error("Access token is missing");
         }
     }, [fileId, accessToken]);
 
     return (
-        <div>
+        <div className="image-card">
             {imageUrl ? (
-                <img src={imageUrl} alt="Google Drive File" style={{ width: '300px', height: 'auto' }} />
+                <img src={imageUrl} alt="Google Drive File" className="image" />
             ) : (
-                <p>Loading...</p>
+                <div className="loading-placeholder">Loading...</div>
             )}
         </div>
     );

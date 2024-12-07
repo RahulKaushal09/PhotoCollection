@@ -110,10 +110,21 @@ async function getAllCollectionsInPhotoCollection(drive, parentFolderId) {
         const folders = allItems.filter(item => item.mimeType === 'application/vnd.google-apps.folder');
         const files = allItems.filter(item => item.mimeType !== 'application/vnd.google-apps.folder');
 
+
+        const foldersWithFiles = await Promise.all(folders.map(async (folder) => {
+            const filesInFolder = await fetchAllFilesAndFolders(drive, folder.id);
+            const filesInsideFolder = filesInFolder.filter(item => item.mimeType !== 'application/vnd.google-apps.folder');
+
+            // Add the files inside the folder to the folder object
+            return {
+                ...folder,
+                files: filesInsideFolder,
+            };
+        }));
         // console.log('Folders:', folders);
         // console.log('Files:', files);
 
-        return { folders, files };
+        return { folders: foldersWithFiles, files };
     } catch (error) {
         console.error('Error fetching collections:', error.message);
         throw new Error('Failed to fetch collections');
