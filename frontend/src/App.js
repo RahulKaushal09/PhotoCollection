@@ -62,7 +62,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
-        <Route path="/collections" element={<Collections ParentFolderName={`Your Trip Lens`} />} />
+        <Route path="/collections" element={<Collections />} />
       </Routes>
     </Router>
 

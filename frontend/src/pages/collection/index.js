@@ -77,7 +77,7 @@ const Collections = ({ parentFolderName, parentFolderId }) => {
             <div className="content">
                 <div className={`folder-section ${filter === "All" || filter === "Folders" ? "" : "hidden"}`}>
                     <h2>Folder Collection</h2>
-                    <FolderGrid folders={folders} />
+                    <FolderGrid folders={folders} onClick={(folders) => Collections(parentFolderId = folders.id, parentFolderName = "test")} />
                 </div>
 
                 <div className={`image-section ${filter === "All" || filter === "Pictures" ? "" : "hidden"}`}>
