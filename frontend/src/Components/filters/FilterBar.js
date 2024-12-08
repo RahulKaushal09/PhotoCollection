@@ -10,7 +10,10 @@ const FilterBar = ({ filter, setFilter }) => {
                 <button
                     key={f}
                     className={`filter-button ${filter === f ? "active" : ""}`}
-                    onClick={() => setFilter(f)}
+                    onClick={() => {
+
+                        setFilter(f)
+                    }}
                 >
                     {f}
                 </button>

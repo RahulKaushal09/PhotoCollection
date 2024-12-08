@@ -1,7 +1,7 @@
 import React from 'react';
 import './Folder.css';
 import folderIcon from '../../assets/images/folder.png';
-const Folder = ({ folder }) => {
+const Folder = ({ folder, onClick }) => {
     console.log(folder); // Check the folder data in the console
 
     // Use optional chaining to safely access the images array
@@ -9,7 +9,7 @@ const Folder = ({ folder }) => {
 
     return (
         <div className="folder-container">
-            <div className="folder">
+            <div className="folder" onClick={() => onClick(folder)}>
                 <div className="folder-icon">
                     <img src={folderIcon} alt="Folder Icon" className="folder-icon-img" />
                     <div className="folder-preview">

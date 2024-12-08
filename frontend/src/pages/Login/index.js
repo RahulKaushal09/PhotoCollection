@@ -19,7 +19,7 @@ function Login() {
                 localStorage.setItem("folderId", data.folderId);
                 localStorage.setItem("accessToken", data.access_token);
                 console.log("Folder ID:", data.folderId);
-                navigate("/collections");
+                navigate(`/collections/${data.folderId}/Your Trip Len`);
             })
             .catch((error) => {
                 console.error("Error:", error);

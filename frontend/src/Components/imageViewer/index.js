@@ -11,6 +11,7 @@ const ImageViewer = ({ fileId }) => {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
+
                 },
             })
                 .then((response) => response.json())
@@ -18,6 +19,7 @@ const ImageViewer = ({ fileId }) => {
                     console.log(data);
 
                     // const url = URL.createObjectURL(data);
+                    // setImageUrl(url);
                     setImageUrl(data.thumbnailLink);
                 })
                 .catch((error) => {

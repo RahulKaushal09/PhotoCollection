@@ -5,13 +5,14 @@ import FolderGrid from "../../Components/collection/FolderGrid";
 import ImageGrid from "../../Components/collection/ImageGrid";
 import { useEffect } from "react";
 import "./Collections.css";
-
-const Collections = ({ parentFolderName, parentFolderId }) => {
+import { useParams } from "react-router-dom";
+const Collections = () => {
     const [filter, setFilter] = useState("All");
     const [data, setData] = useState({ folders: [], files: [] });
     const [error, setError] = useState(null);
     const [folders, setFolders] = useState([]);
     const [images, setImages] = useState([]);
+    const { parentFolderId, parentFolderName } = useParams();
 
 
     useEffect(() => {
@@ -20,11 +21,16 @@ const Collections = ({ parentFolderName, parentFolderId }) => {
         };
 
         fetchCollections();
-    }, []);
+    }, [parentFolderId]);
 
     async function getAllCollection(setData) {
         const accessToken = localStorage.getItem('accessToken');
-        const folderId = localStorage.getItem('folderId');
+        var folderId = localStorage.getItem('folderId');
+        console.log('parentFolderId:', parentFolderId);
+        console.log('parentFolderName:', parentFolderName);
+        setImages([]);
+        setFolders([]);
+
 
         if (parentFolderId) {
             console.log(parentFolderId);
@@ -72,21 +78,21 @@ const Collections = ({ parentFolderName, parentFolderId }) => {
     }
     return (
         <div className="collectionBox">
+            <h1>{parentFolderId !== undefined && parentFolderId !== null ? parentFolderName : "Your Trip Lens"}</h1>
             <FilterBar filter={filter} setFilter={setFilter} />
-            <h1>{parentFolderId != undefined && parentFolderId != null ? parentFolderName : "Your Trip Lens"}</h1>
             <div className="content">
-                <div className={`folder-section ${filter === "All" || filter === "Folders" ? "" : "hidden"}`}>
+                <div className={`folder-section ${filter === "All" || filter === "Folders" ? "" : "hidden"}  ${images.length > 0 ? "" : "hidden"}`} >
                     <h2>Folder Collection</h2>
-                    <FolderGrid folders={folders} onClick={(folders) => Collections(parentFolderId = folders.id, parentFolderName = "test")} />
+                    <FolderGrid folders={folders} />
                 </div>
 
-                <div className={`image-section ${filter === "All" || filter === "Pictures" ? "" : "hidden"}`}>
+                <div className={`image-section ${filter === "All" || filter === "Pictures" ? "" : "hidden"} ${images.length > 0 ? "" : "hidden"}`} >
                     <h2>Image Collection</h2>
                     <ImageGrid images={images} />
                 </div>
             </div>
 
-        </div>
+        </div >
     );
 };
 
