@@ -5,11 +5,10 @@ import ImageGrid from "../../Components/collection/ImageGrid";
 import { useEffect } from "react";
 import "./Collections.css";
 import { useParams } from "react-router-dom";
-
+import { backendUrl } from "../../config";
 const Collections = () => {
     const [filter, setFilter] = useState("All");
     const [data, setData] = useState({ folders: [], files: [] });
-    const [error, setError] = useState(null);
     const [folders, setFolders] = useState([]);
     const [images, setImages] = useState([]);
     const [isCreateFolderModalOpen, setIsCreateFolderModalOpen] = useState(false);
@@ -41,7 +40,7 @@ const Collections = () => {
             folderId = parentFolderId;
         }
 
-        const backendUrl = 'http://localhost:5000';
+        // const backendUrl = 'http://localhost:5000';
 
         if (!accessToken || !folderId) {
             console.error('Missing required data: access token or folder ID');
@@ -98,23 +97,70 @@ const Collections = () => {
         setSelectedFile(null);
     };
 
-    const handleCreateFolderSubmit = () => {
+    const handleCreateFolderSubmit = async () => {
         if (newFolderName.trim() === "") {
             alert("Folder name cannot be empty");
             return;
         }
+
         console.log("Creating folder:", newFolderName);
-        // Add logic to create folder
+
+        try {
+            const response = await fetch(`${backendUrl}/create-folder`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    name: newFolderName,
+                    ParentFolderId: parentFolderId,
+                }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert("Folder created successfully");
+                // Refresh folder data or state
+            } else {
+                alert(`Error creating folder: ${result.error || "Unknown error"}`);
+            }
+        } catch (error) {
+            console.error("Error creating folder:", error);
+            alert("Error creating folder. Please try again.");
+        }
+
         handleCreateFolderModalClose();
+        getAllCollection(setData);
     };
 
-    const handleAddImageSubmit = () => {
+    const handleAddImageSubmit = async () => {
         if (imageName.trim() === "" || !selectedFile) {
             alert("Image name and file are required");
             return;
         }
-        console.log("Adding image:", { imageName, selectedFile, folderId: selectedFolderId || parentFolderId });
-        // Add logic to upload image
+
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+        formData.append("name", imageName);
+
+        try {
+            const response = await fetch(`${backendUrl}/upload/${selectedFolderId || parentFolderId}`, {
+                method: "POST",
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error(`Upload failed: ${response.statusText}`);
+            }
+
+            const result = await response.json();
+            console.log("Image uploaded successfully:", result);
+        } catch (error) {
+            console.error("Error uploading image:", error.message);
+            alert("Image upload failed. Please try again.");
+        }
+
         handleAddImageModalClose();
     };
 

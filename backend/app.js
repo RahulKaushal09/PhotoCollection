@@ -102,14 +102,12 @@ const uploadFileToDrive = async (folderId, filePath, fileName) => {
         fs.unlinkSync(filePath);
     }
 };
-
-const PARENT_FOLDER_ID = process.env.DRIVE_FOLDER_ID; // Parent Google Drive Folder ID
-
 // Route to create a folder
 app.post("/create-folder", async (req, res) => {
     try {
         const folderName = req.body.name; // Get folder name from request body
-        const folderId = await createFolder(PARENT_FOLDER_ID, folderName);
+        const ParentFolderId = req.body.ParentFolderId;
+        const folderId = await createFolder(ParentFolderId, folderName);
         res.json({ folderId, message: "Folder created successfully" });
     } catch (err) {
         res.status(500).json({ error: err.message });
