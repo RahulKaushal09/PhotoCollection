@@ -1,7 +1,7 @@
 import React from "react";
 import "./FilterBar.css";
 
-const FilterBar = ({ filter, setFilter }) => {
+const FilterBar = ({ filter, setFilter, handleCreateFolder, handleAddImage }) => {
     const filters = ["All", "Folders", "Pictures"];
 
     return (
@@ -18,6 +18,10 @@ const FilterBar = ({ filter, setFilter }) => {
                     {f}
                 </button>
             ))}
+            <div className="action-buttons">
+                <button className="btn create-folder" onClick={handleCreateFolder}>+ Create Folder</button>
+                <button className="btn add-image" onClick={handleAddImage}>+ Add Image</button>
+            </div>
         </div>
     );
 };
