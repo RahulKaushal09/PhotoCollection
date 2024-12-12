@@ -1,7 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const multer = require("multer");
+const { google } = require("googleapis");
+const fs = require("fs");
 
+const oauth2Client = new google.auth.OAuth2(
+    process.env.CLIENT_ID,
+    process.env.CLIENT_SECRET,
+);
 
 const upload = multer({ dest: "uploads/" });
 const { getOrCreatePhotoCollectionFolder,

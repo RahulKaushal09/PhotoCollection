@@ -1,8 +1,6 @@
 const express = require("express");
-const { google } = require("googleapis");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const fs = require("fs");
 
 require("dotenv").config();
 const app = express();
@@ -19,10 +17,7 @@ app.use(cors());
 // app.use(bodyParser.json());
 app.use(express.json());
 app.use('/', routes);
-const oauth2Client = new google.auth.OAuth2(
-    process.env.CLIENT_ID,
-    process.env.CLIENT_SECRET,
-);
+
 
 
 const PORT = process.env.PORT || 5000;
