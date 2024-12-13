@@ -32,30 +32,30 @@ const createFolder = async (parentFolderId, folderName) => {
     }
 };
 
-const uploadFileToDrive = async (folderId, filePath, fileName) => {
-    try {
-        const drive = google.drive({ version: "v3", auth: oauth2Client });
+// const uploadFileToDrive = async (folderId, filePath, fileName) => {
+//     try {
+//         const drive = google.drive({ version: "v3", auth: oauth2Client });
 
-        const response = await drive.files.create({
-            requestBody: {
-                name: fileName,
-                parents: [folderId], // Folder where the file will be uploaded
-            },
-            media: {
-                mimeType: "image/jpeg", // Change based on file type
-                body: fs.createReadStream(filePath),
-            },
-        });
-        console.log("File uploaded:", response.data);
-        return response.data;
-    } catch (err) {
-        console.error("Error uploading file:", err.message);
-        throw err;
-    } finally {
-        // Clean up temporary file
-        fs.unlinkSync(filePath);
-    }
-};
+//         const response = await drive.files.create({
+//             requestBody: {
+//                 name: fileName,
+//                 parents: [folderId], // Folder where the file will be uploaded
+//             },
+//             media: {
+//                 mimeType: "image/jpeg", // Change based on file type
+//                 body: fs.createReadStream(filePath),
+//             },
+//         });
+//         console.log("File uploaded:", response.data);
+//         return response.data;
+//     } catch (err) {
+//         console.error("Error uploading file:", err.message);
+//         throw err;
+//     } finally {
+//         // Clean up temporary file
+//         fs.unlinkSync(filePath);
+//     }
+// };
 router.post("/create-folder", async (req, res) => {
     try {
         const folderName = req.body.name; // Get folder name from request body
