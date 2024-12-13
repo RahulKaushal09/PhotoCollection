@@ -46,7 +46,7 @@ const uploadFileToDrive = async (folderId, filePath, fileName) => {
                 body: fs.createReadStream(filePath),
             },
         });
-        // console.log("File uploaded:", response.data);
+        console.log("File uploaded:", response.data);
         return response.data;
     } catch (err) {
         console.error("Error uploading file:", err.message);
