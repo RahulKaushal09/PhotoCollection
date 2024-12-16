@@ -80,7 +80,7 @@ router.post("/getAllCollection", async (req, res) => {
         res.json({
             folders,
             files,
-            message: "Collections fetched successfully",
+            message: "Collections fetched successfully!!!",
         });
     } catch (err) {
         res.status(500).json({ error: err.message });
