@@ -61,7 +61,7 @@ router.post("/create-folder", async (req, res) => {
         const folderName = req.body.name; // Get folder name from request body
         const ParentFolderId = req.body.ParentFolderId;
         const folderId = await createFolder(ParentFolderId, folderName);
-        res.json({ folderId, message: "Folder created successfully" });
+        res.json({ folderId, message: "Folder created successfully!!!" });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
