@@ -109,7 +109,7 @@ router.post("/api/google-login", async (req, res) => {
 
         const payload = ticket.getPayload();
         const userId = payload.sub;
-        console.log(`User ${userId} logged in.`);
+        console.log(`User ${userId} logged in!!!.`);
 
         // Set OAuth2 client credentials
         oauth2Client.setCredentials({
@@ -126,7 +126,7 @@ router.post("/api/google-login", async (req, res) => {
         });
     } catch (error) {
         console.error("Login error:", error.message);
-        res.status(500).json({ error: "Authentication failed." });
+        res.status(500).json({ error: "Authentication failed!!!." });
     }
 });
 
